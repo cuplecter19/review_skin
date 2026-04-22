@@ -1,0 +1,920 @@
+@charset "utf-8";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+.bo_fx {position:relative;padding:20px 0;}
+.bo_fx .chk_all{ position:absolute;left:5px;top:20px;}
+
+.review-board {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+               Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
+               'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+.board-category	{
+	display: block;
+	position: relative;
+	margin-bottom: 10px; 
+}
+.board-category select	{
+
+}
+
+@media all and (max-width: 640px) {
+#bo_v_con * {max-width:100%;}
+
+	.board-category	{
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0 10px;
+	}
+	.board-category select	{
+		width: 100%;
+	}
+
+	.bo_fx	{
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 20px 10px !important;
+	}
+	.bo_fx a	{
+		display: block;
+		width: 100%;
+	}
+}
+
+#bo_list,
+#bo_w,
+#bo_v,
+.review-list {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+               Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
+               'Noto Sans KR', 'Malgun Gothic', sans-serif !important;
+}
+
+/* ── #bo_w 자체에 overflow 방지 ── */
+#bo_w {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── 전체 board-write 영역 overflow 방지 ── */
+.board-write {
+  padding: 0 10px;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.board-write h3	{
+	font-size: 26px;
+	text-align: center;
+	padding: 30px 0 20px;
+} 
+.board-write .write-notice	{
+	padding: 10px;
+	font-size: 11px;
+}
+
+/* ── dl/dt/dd 레이아웃: box-sizing 추가     overflow 방지 ── */
+.board-write > dl { position: relative; max-width: 100%; box-sizing: border-box; }
+.board-write > dl > dt { width: 70px; position: absolute; line-height: 32px; text-align: center; }
+.board-write > dl > dd {
+  width: 100%;
+  margin-left: 0;
+  padding-left: 80px;
+  box-sizing: border-box;
+  line-height: 32px;
+}
+.board-write input.frm_input.full {
+  width: 100%;
+  display: block;
+  margin: 1px 0;
+  box-sizing: border-box;
+}
+
+/* ── 에디터 컨테이너: 부모 너비를 절대 초과하지 않도록 ── */
+.board-write .wr_content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 에디터 내부 요소 (textarea, iframe 등) 모두 100% 제한 */
+.board-write .wr_content textarea,
+.board-write .wr_content iframe,
+.board-write .wr_content .note-editor,
+.board-write .wr_content .smarteditor2,
+.board-write .wr_content > * {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.board-viewer.theme-box	{
+	display: block;
+	position: relative;
+	padding: 20px;
+}
+
+.board-viewer .subject	{
+	text-align: center;
+}
+.board-viewer .subject em	{
+	display: block;
+	position: relative;
+	font-size: 14px;
+	line-height: 1.2em;
+	padding-bottom: 10px;
+}
+.board-viewer .subject strong	{
+	display: block;
+	position: relative;
+	font-size: 22px;
+	line-height: 1.2em;
+}
+
+.board-viewer .info	{
+	margin-top: 20px;
+	padding: 8px 10px;
+	text-align: center;
+}
+.board-viewer .info span	{ display: inline-block; opacity: .8; }
+.board-viewer .info span + span:before	{
+	content: "";
+	display: inline-block;
+	width: 1px;
+	height: 8px;
+	vertical-align: middle;
+	margin: 0 10px;
+}
+
+.board-viewer .contents	{
+	display: block;
+	position: relative;
+	margin: 20px 0;
+	padding: 40px 15px;
+	border-left-width: 0;
+	border-right-width: 0;
+}
+
+#bo_v_bot	{ padding: 20px 0; overflow: hidden; }
+.bo_v_nb	{ float: left; }
+.bo_v_com	{ float: right; }
+
+.board-comment-list			{ position: relative; }
+.board-comment-list .co-line	{
+	display: block;
+	position: relative;
+	clear: both;
+	width: 100%;
+	height: 1px;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+.board-comment-list .item	{
+	position: relative;
+	padding: 10px 10px 10px 10px;
+}
+.board-comment-list .co-name	{
+	position: relative;
+  width: auto; 
+	top: 0px;
+	left: 0;
+	bottom: 0;
+	box-sizing: border-box;
+}
+.board-comment-list .co-info {
+	display: block;
+	text-align: right;
+	font-size: 11px;
+	opacity: .7;
+}
+.board-comment-list .co-info span	{ display: inline-block; opacity: .8; }
+.board-comment-list .co-info span + span:before	{
+	content: "";
+	display: inline-block;
+	width: 1px;
+	height: 8px;
+	vertical-align: middle;
+	margin: 0 10px;
+}
+
+.board-comment-list .item.reply	{ border-left: 5px solid rgba(255, 255, 255, .1); }
+.board-comment-list .item.reply .co-name	{
+	background: none;
+}
+
+.board-comment-list + .board-comment-write	{
+	margin-top: 20px;
+}
+
+.board-comment-form	{ 
+	position: relative;
+	padding-right: 80px;
+}
+.board-comment-form .btn_confirm	{
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 29px;
+	width: 80px;
+}
+.board-comment-form .btn_confirm .ui-btn	{
+	width: 100%;
+	height: 100%;
+}
+.board-comment-form p	{
+	margin: 0;
+	padding: 5px 10px;
+}
+.board-comment-form textarea	{ display: block; height: 100px; resize: none; border: none; }
+
+@media all and (max-width: 640px) {
+
+	.avocado-list li a	{
+		line-height: 1.2em;
+		padding: 10px 25px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.avocado-list li .ico-cate,
+	.avocado-list li .name,
+	.avocado-list li .date,
+	.avocado-list li .hit	{
+		position: relative;
+		width: auto;
+		left: auto;
+		right: auto;
+		bottom: auto;
+		line-height: 1.2em;
+	}
+
+	.avocado-list li .info	{
+		display: block;
+		text-align: right;
+		line-height: 1.0em;
+		padding-top: 10px;
+	}
+
+	.avocado-list li .ico-cate	{ display: inline; }
+	.avocado-list li .ico-cate:before	{ content: "[ "; }
+	.avocado-list li .ico-cate:after	{ content: " ]"; }
+
+	.avocado-list li strong	{ display: inline; line-height: 1.2em; }
+
+	.avocado-list li .name,
+	.avocado-list li .date,
+
+	.board-comment-list .item	{ padding: 0; }
+	.board-comment-list .co-content	{ padding: 10px; word-break:break-all;}
+
+}
+#rating-stars {
+  font-size: 24px;
+  color: #f39c12;
+  cursor: pointer;
+  line-height: 1;        
+}
+.rating-input {
+  width: 50px;           
+  text-align: center;
+}
+
+/* ── 평점 영역 overflow 방지 ── */
+dd.rating-wrap {
+  display: flex;
+  align-items: center; 
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ── form-bpd: 유연한 그리드 ── */
+.form-bpd {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-bpd dl {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.form-bpd dt { margin: auto; white-space: nowrap; font-size: 13px; }
+.form-bpd dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.form-date {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  row-gap: 12px;
+  width: 100%;
+  margin-block-start: 1rem;
+  box-sizing: border-box;
+}
+
+.form-date dl {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.form-date .date-wrap {
+  display: grid;
+  grid-template-columns: 100px auto 100px;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.form-date select.frm_input,
+.form-date input[type="date"].frm_input {
+  width: 100%;
+  min-width: 0;           
+  box-sizing: border-box;
+}
+
+/* ── top-line: 불필요한 margin 제거, 유연하게 ── */
+.top-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-left: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.top-line label {
+  margin-right: 4px;
+  white-space: nowrap;
+  line-height: 2.5;
+}
+
+.top-line select,
+.top-line input[type="text"] {
+  height: 32px;
+  line-height: 32px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  margin-left: 0;
+  max-width: 100%;
+}
+
+.top-inline .item {
+  display: inline-flex;
+  align-items: center;   
+  gap: 6px;              
+}
+
+/* ── poster-grid: 좁은 화면에서도 overflow 방지 ── */
+.poster-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.poster-grid input[type="file"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.poster-grid input[type="text"] {
+  width: 100% !important;   
+  box-sizing: border-box;   
+}
+
+/* ── poster_file dl도 동일하게 처리 ── */
+dl.poster_file {
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+dl.poster_file > dd {
+  width: 100%;
+  margin-left: 0;
+  padding-left: 80px;
+  box-sizing: border-box;
+}
+
+/* ── 해시태그 input도 100% ── */
+#wr_7 {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.review-item .card-link:hover { cursor: pointer; }
+
+.review-item .card-link{
+  position: absolute;
+  inset: 0;                 
+  z-index: 9;               
+  background: transparent;  
+}
+
+.review-item.is-blind .review-thumb {
+  filter: blur(10px);          
+  -webkit-filter: blur(10px);  
+  transform: scale(1.02);
+  position: relative;
+}
+
+.review-item.is-blind .review-cover-blind {
+  display: none !important;  
+}
+
+.review-thumb {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.review-cover-blind {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0,0,0,0.8),
+    rgba(0,0,0,0.8) 10px,
+    rgba(255,255,255,0.2) 10px,
+    rgba(255,255,255,0.2) 20px
+  );
+  z-index: 2;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0 auto;
+}
+
+.review-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+  color: #fff;
+  width: var(--card-width);
+  height: var(--card-height);
+  min-height: 130px;
+  max-height: 1000px;
+  box-shadow: 0px 0px 10px #00000042;
+}
+
+@media (max-width:800px){
+  .review-item {
+    width:100%;
+  }
+}
+
+.review-item::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0;
+  height: 65%;  
+  background: linear-gradient(to top,
+              rgba(0,0,0,0.88) 0%,
+              rgba(0,0,0,0.55) 60%,
+              rgba(0,0,0,0.00) 100%);
+  z-index:1;
+  pointer-events:none;
+}
+
+.review-meta{
+  position:absolute; top:10px; right:10px;
+  background: rgba(0,0,0,0.55);
+  padding: 5px 10px; border-radius: 16px;
+  font-size: 12px; z-index: 4;
+}
+
+.review-content {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;  
+  align-items: flex-start;
+  gap: 8px; 
+  z-index: 3;
+}
+
+.review-content .rating-line,
+.review-content .review-title {
+  display: block;
+}
+
+.review-content .hashtags {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  width:50%;               
+  max-width:50%;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.review-content .hashtags span{
+  display:inline-block;
+  background:#fff;
+  color:#222;
+  font-size:12px;
+  line-height:1;
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;      
+}
+
+.rating-line{
+  display:flex; align-items:center; gap:8px;
+  font-size: 14px; opacity: .95;
+}
+
+/* ===== 별점 통일 스타일 (view/list 공용) ===== */
+:root{
+  --star-color: #f5c342;
+  --star-size: 14px;
+  --star-gap: 4px;
+}
+
+.rating-stars.fa-stars{
+  display: inline-flex;
+  align-items: center;
+  gap: var(--star-gap);
+  line-height: 1;
+}
+
+.rating-stars.fa-stars .fa-star-wrap{
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  font-size: var(--star-size);
+}
+
+.rating-stars.fa-stars .star-outline,
+.rating-stars.fa-stars .star-fill{
+  position: absolute;
+  inset: 0;
+  line-height: 1;
+}
+
+.rating-stars.fa-stars .star-outline{
+  color: var(--star-color);
+}
+
+.rating-stars.fa-stars .star-fill{
+  color: var(--star-color);
+  overflow: hidden;
+  width: 0%;
+  white-space: nowrap;
+}
+
+.rating-stars.fa-stars .fa-star-wrap.full .star-fill{ width: 100%; }
+.rating-stars.fa-stars .fa-star-wrap.half .star-fill{ width: 50%; }
+.rating-stars.fa-stars .fa-star-wrap.empty .star-fill{ width: 0%; }
+
+#bo_v .rating-stars.fa-stars .fa-star-wrap{
+  font-size: 16px;
+}
+
+.review-title{
+  font-size: 22px; font-weight: 800; line-height: 1.25;
+  white-space: normal; overflow: hidden; text-overflow: ellipsis; max-width: 50%;
+}
+.review-title a{
+  display: inline-block;
+  font-weight: 800;
+  font-size: 22px;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: 0 2px 8px rgba(0,0,0,.45);
+}
+
+.hashtags{
+  display: flex;
+  flex-wrap: wrap;          
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 10px; 
+}
+.hashtags span{
+  display:inline-block;
+  margin-right:6px;
+  margin-bottom:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  color:#eee;
+  font-size:12px;
+  line-height:1;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.review-summary{
+  position:absolute; inset:0; z-index: 6;
+  background: rgba(0,0,0,0.88);
+  color:#fff; padding: 40px;
+  opacity: 0; transition: opacity .25s ease;
+  overflow-y:auto; font-size: 14px; line-height: 1.6;
+  pointer-events: none;
+}
+.review-item:hover .review-summary{ opacity: 1; }
+
+#bo_cate {
+	text-align:center;
+}
+#bo_cate li {
+	display:inline-block;
+	vertical-align:middle;
+	margin: 0 0 2em 0.2em;
+}
+
+#bo_list .review-item .review-summary {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  white-space: normal !important;
+  line-height: 1.6;
+  height: auto !important;
+  max-height: calc(1.6em * 6) !important; 
+}
+
+.view-fullbleed.view-fullbleed {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5% 0% 0 0%;
+  font-family: 'Pretendard';
+}
+
+.view-fullbleed::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right,
+      rgba(255,255,255,0.05) 0%,
+      rgba(0,0,0,0.85) 40%,
+      rgba(0,0,0,1) 100%
+    ),
+    var(--view-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.content-wrap {
+  max-width: 800px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: 0;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: left;
+  color: #fff;
+}
+
+#bo_v.view-fullbleed #bo_v_bot,
+#bo_v.view-fullbleed .view-comment-wrap {
+  max-width: 800px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: 0;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1;         
+  word-break: keep-all;     
+  overflow-wrap: break-word; 
+}
+
+.rating {
+  font-size: 1.2rem;
+  margin-bottom: 0.5em;
+}
+
+.date {
+  font-size: 0.95rem;
+  margin-bottom: 0.8em;
+  opacity: 0.85;
+}
+
+.tags {
+  margin-bottom: 1em;
+}
+
+.tag {
+  display: inline-block;
+  margin: 0 0.25em 0.25em 0;
+  padding: 0.3em 0.8em;
+  background: rgba(255,255,255,0.15);
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.star {
+  font-size: 24px;
+  color: #f5c518;
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.star.empty {
+  color: #55555531;
+}
+
+.star.half {
+  color: #555; 
+}
+.star.half::before {
+  content: "★";
+  color: #f5c518;
+  position: absolute;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+}
+
+.subnote{
+  margin: 8px 0 14px;       
+  font-size: 14px;          
+  line-height: 1.6;
+  color: rgba(255,255,255,.85);
+  letter-spacing: 0.2px;
+}
+
+.line-view{
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,.65);
+  margin: 12px 0 18px;   
+}
+
+.fix-layout:has(#bo_v.view-fullbleed) {
+  max-width: 1600px !important;
+  margin: 10px !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr minmax(900px, 40vw) !important;
+  column-gap: 5vw !important;   
+}
+
+.fix-layout:has(#bo_v.view-fullbleed) #bo_v.view-fullbleed {
+  grid-column: 2 !important;
+  width: 100% !important;       
+}
+
+#bo_v.view-fullbleed .content-wrap {
+  width: 100% !important;
+}
+
+.view-content {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #eee;
+}
+
+@media (max-width: 820px){
+	.fix-layout:has(#bo_v.view-fullbleed){
+		display: block !important;
+		grid-template-columns: 1fr !important;
+		column-gap: 0 !important;
+		max-width: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	.fix-layout:has(#bo_v.view-fullbleed) #bo_v.view-fullbleed{
+		grid-column: 1 / -1 !important;
+		width: 100% !important;
+	}
+
+	#bo_v.view-fullbleed{
+		align-items: center !important;
+		padding: 6% 0 0 !important;
+	}
+
+	#bo_v.view-fullbleed .content-wrap{
+		width: 92% !important;
+		max-width: 720px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+		padding: 40px 16px !important;
+	}
+
+	#bo_v.view-fullbleed #bo_v_bot,
+	#bo_v.view-fullbleed .view-comment-wrap {
+		margin-left: auto !important;
+		margin-right: auto !important;
+		width: 92% !important;
+		max-width: 720px !important;
+		padding: 0 16px !important;
+	}
+}
+
+@media all and (max-width: 640px) {
+  .form-bpd, .form-date {
+    grid-template-columns: 1fr;
+  }
+  .form-bpd dl, .form-date dl {
+    grid-template-columns: 80px 1fr;
+  }
+
+  .board-write > dl > dt {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding-left: 5px;
+    line-height: 2;
+  }
+  .board-write > dl > dd {
+    padding-left: 0;
+  }
+  dl.poster_file > dd {
+    padding-left: 0;
+  }
+
+  .poster-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-line select,
+  .top-line input[type="text"] {
+    width: 100%;
+  }
+}
+
+a.blur-txt
+{
+  filter:blur(5px);
+  color:CurrentColor;
+  cursor: pointer;
+}
+
+a.none-blur
+{
+  filter:blur(0px);
+  font-family: inherit;
+}
+
+span.italictext
+{
+  font-style: italic;
+  font-family: inherit;
+}
+
+span.txt-box 
+{
+  color:<?=$css['color_default'][0]?>;
+  background-color: <?=$css['color_point'][0]?>;
+  padding: 0px 2px;
+}
+
+.blurtext {
+	filter: blur(3px);
+	-webkit-filter: blur(3px);
+	transition: filter .2s ease, -webkit-filter .2s ease;
+}
+
+.blurtext.off { filter:blur(0px)!important; }
