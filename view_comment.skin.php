@@ -111,6 +111,13 @@ var char_max = parseInt(<?php echo $comment_max ?>);
                 }
             });
             </script>
+            <div class="comment-toolbar">
+            <?php if (function_exists('emote_popup_tag')) { echo emote_popup_tag('wr_content'); } else { ?>
+            <button type="button" class="emoticon-btn" onclick="open_emoticon_comment();" title="이모티콘">
+                <i class="fa-regular fa-face-smile"></i>
+            </button>
+            <?php } ?>
+            </div>
             <p>
             <?php if ($is_guest) { //@210403 ?>
             <label for="wr_name" class="sound_only">이름<strong> 필수</strong></label>
@@ -262,11 +269,17 @@ function comment_box(comment_id, work)
     }
 }
 
+function open_emoticon_comment() {
+    var url = g5_bbs_url + '/emoticon.php?target_id=wr_content';
+    window.open(url, 'emoticon', 'width=350,height=400,scrollbars=yes');
+}
+
 function comment_delete()
 {
     return confirm("이 댓글을 삭제하시겠습니까?");
 }
-comment_box('', 'c'); // 댓글 입력폼이 보이도록 처리하기위해서 추가 (root님)
+
+comment_box('', 'c');// 댓글 입력폼이 보이도록 처리하기위해서 추가 (root님)
 <?php if (isset($board['bo_use_sns']) && $board['bo_use_sns'] && ($config['cf_facebook_appid'] || $config['cf_twitter_key'])) { ?>
 $(function() {
     $("#bo_vc_send_sns").load(

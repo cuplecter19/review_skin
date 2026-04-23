@@ -2,6 +2,29 @@
 
 if (!defined("_GNUBOARD_")) exit; // 개별 페이지 접근 불가
 
+// ── 해시태그 정제 함수 ──
+if (!function_exists('sanitize_hashtags')) {
+    function sanitize_hashtags($raw) {
+        $raw = trim((string)$raw);
+        if ($raw === '') return '';
+        $parts  = explode(',', $raw);
+        $result = array();
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if (mb_substr($part, 0, 1, 'UTF-8') === '#') {
+                $part = mb_substr($part, 1, null, 'UTF-8');
+            }
+            $part = trim($part);
+            if ($part !== '') $result[] = $part;
+        }
+        return implode(',', $result);
+    }
+}
+
+if (isset($_POST['wr_7'])) {
+    $_POST['wr_7'] = sanitize_hashtags($_POST['wr_7']);
+}
+
 // ─── 1) 컬럼 존재 확인 (최초 1회만 ALTER) ───
 $temp = sql_fetch("SELECT * FROM {$write_table} LIMIT 1");
 
