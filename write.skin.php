@@ -107,6 +107,41 @@ if (!function_exists('render_stars')) {
 	<input type="text" name="wr_protect" id="wr_protect" value="<?php echo $write['wr_protect']?>" maxlength="20" class="frm_input">
   </label>
 </div>
+
+<!-- 캠페인 UI -->
+<dl class="campaign-row">
+    <dt><label>캠페인</label></dt>
+    <dd>
+        <label>
+            <input type="checkbox" id="use_campaign" name="use_campaign" value="1"
+                <?php echo (!empty($write['wr_9'])) ? 'checked' : '' ?>>
+            캠페인에 포함
+        </label>
+        <div id="campaign_selector" style="display:<?php echo (!empty($write['wr_9'])) ? 'block' : 'none' ?>;margin-top:8px;">
+            <?php
+            $sql_camp = "SELECT DISTINCT wr_9 FROM {$write_table} WHERE wr_is_comment=0 AND wr_9 != '' ORDER BY wr_9";
+            $res_camp = sql_query($sql_camp);
+            $camp_list = array();
+            while ($crow = sql_fetch_array($res_camp)) { $camp_list[] = $crow['wr_9']; }
+            ?>
+            <?php if (!empty($camp_list)) { ?>
+            <select id="campaign_select" class="frm_input">
+                <option value="">-- 기존 캠페인 선택 --</option>
+                <?php foreach ($camp_list as $cn) { ?>
+                <option value="<?php echo htmlspecialchars($cn, ENT_QUOTES, 'UTF-8') ?>"
+                    <?php echo (isset($write['wr_9']) && $write['wr_9'] === $cn) ? 'selected' : '' ?>>
+                    <?php echo htmlspecialchars($cn, ENT_QUOTES, 'UTF-8') ?>
+                </option>
+                <?php } ?>
+            </select>
+            <?php } ?>
+            <input type="text" id="campaign_new_input" class="frm_input" placeholder="새 캠페인명 직접 입력" value="<?php echo (!empty($write['wr_9']) && !in_array($write['wr_9'], $camp_list)) ? htmlspecialchars($write['wr_9'], ENT_QUOTES, 'UTF-8') : '' ?>">
+            <input type="hidden" name="wr_9" id="wr_9" value="<?php echo get_text(isset($write['wr_9']) ? $write['wr_9'] : ''); ?>">
+            <small style="display:block;margin-top:4px;opacity:.7;">기존 캠페인 선택 또는 새 캠페인명 입력 (둘 다 입력 시 직접 입력값 우선)</small>
+        </div>
+    </dd>
+</dl>
+
 	<dl>
 		<dt>작품명</dt>
 		<dd><input type="text" name="wr_subject" value="<?php echo $subject ?>" id="wr_subject" required class="frm_input required full" size="50" maxlength="255"></dd>
@@ -133,12 +168,9 @@ if (!function_exists('render_stars')) {
 	</dl>
 <div class="form-bpd">
 <dl>
-  <dt><label for="wr_2">블러 적용</label></dt>
+  <dt><label for="wr_2">작가명</label></dt>
   <dd>
-	<select name="wr_2" id="wr_2" class="frm_input">
-	  <option value="사용안함" <?php echo get_selected(isset($write['wr_2']) ? $write['wr_2'] : '', '사용안함')?>>사용안함</option>
-	  <option value="사용" <?php echo get_selected(isset($write['wr_2']) ? $write['wr_2'] : '', '사용')?>>사용</option>
-	</select>
+    <input type="text" name="wr_2" id="wr_2" value="<?php echo get_text(isset($write['wr_2']) ? $write['wr_2'] : ''); ?>" class="frm_input full">
   </dd>
 </dl>
   <dl>
@@ -186,6 +218,15 @@ if (!function_exists('render_stars')) {
 			<p id="char_count_desc">이 게시판은 최소 <strong><?php echo $write_min; ?></strong>글자 이상, 최대 <strong><?php echo $write_max; ?></strong>글자 이하까지 글을 쓰실 수 있습니다.</p>
 			<?php } ?>
 			<?php echo $editor_html;?>
+			<?php if(!$board['bo_use_dhtml_editor']) { ?>
+			<div class="editor-toolbar">
+			<?php if (function_exists('emote_popup_tag')) { echo emote_popup_tag('wr_content'); } else { ?>
+			<button type="button" class="emoticon-btn" onclick="open_emoticon_write();" title="이모티콘">
+			    <i class="fa-regular fa-face-smile"></i> 이모티콘
+			</button>
+			<?php } ?>
+			</div>
+			<?php } ?>
 			<?php if($write_min || $write_max) { ?>
 			<div id="char_count_wrap"><span id="char_count"></span>글자</div>
 			<?php } ?>
@@ -195,7 +236,10 @@ if (!function_exists('render_stars')) {
 <?php }?>
 	<dl>
 		<dt>해시태그</dt>
-		<dd><input type="text" name="wr_7" value="<?php echo $wr_7 ?>" id="wr_7" size="250" maxlength="255"></dd>
+		<dd>
+            <input type="text" name="wr_7" value="<?php echo $wr_7 ?>" id="wr_7" class="frm_input full" maxlength="255">
+            <small style="display:block;margin-top:4px;opacity:.7;">쉼표(,)로 구분. 단어 내 띄어쓰기는 허용. 예: 판타지 소설, SF, 추천</small>
+        </dd>
 	</dl>
 <?php if(!$is_member){?>
 	<dl>
@@ -348,6 +392,42 @@ $('#set_secret').on('change', function() {
   if (v === 'protect') $('#set_protect_inline').css('display','inline-flex');
   else { $('#set_protect_inline').hide(); $('#wr_protect').val(''); }
 });
+
+// ── 캠페인 UI ──
+var useCampaignEl = document.getElementById('use_campaign');
+var campaignSelEl = document.getElementById('campaign_select');
+var campaignNewEl = document.getElementById('campaign_new_input');
+var wr9El         = document.getElementById('wr_9');
+
+if (useCampaignEl) {
+    useCampaignEl.addEventListener('change', function() {
+        var sel = document.getElementById('campaign_selector');
+        sel.style.display = this.checked ? 'block' : 'none';
+        if (!this.checked && wr9El) wr9El.value = '';
+    });
+}
+if (campaignSelEl) {
+    campaignSelEl.addEventListener('change', function() {
+        if (this.value && wr9El) wr9El.value = this.value;
+    });
+}
+if (campaignNewEl) {
+    campaignNewEl.addEventListener('input', function() {
+        if (this.value.trim()) {
+            if (wr9El) wr9El.value = this.value.trim();
+        } else if (campaignSelEl && campaignSelEl.value) {
+            if (wr9El) wr9El.value = campaignSelEl.value;
+        } else {
+            if (wr9El) wr9El.value = '';
+        }
+    });
+}
+
+// ── 이모티콘 ──
+function open_emoticon_write() {
+    var url = g5_bbs_url + '/emoticon.php?target_id=wr_content';
+    window.open(url, 'emoticon', 'width=350,height=400,scrollbars=yes');
+}
 </script>
 
 <script>
