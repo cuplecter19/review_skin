@@ -287,24 +287,26 @@ function select_copy(sw) {
 </script>
 <?php } ?>
 <script>
-// 해시태그 행 넘침 처리: 넘치는 태그 숨김
-(function() {
-    var rows = document.querySelectorAll('.tag-row');
-    for (var r = 0; r < rows.length; r++) {
-        (function(row) {
-            var tags = row.querySelectorAll('.tag-item, .campaign-label');
-            if (!tags.length) return;
-            var rowTop = row.getBoundingClientRect().top;
-            for (var i = tags.length - 1; i >= 0; i--) {
-                var t = tags[i];
-                if (t.getBoundingClientRect().top > rowTop + 2) {
-                    t.classList.add('hidden');
-                } else {
-                    break;
+// 해시태그 행 넘침 처리: 넘치는 태그 숨김 (DOMContentLoaded + rAF으로 레이아웃 완료 후 실행)
+document.addEventListener('DOMContentLoaded', function() {
+    requestAnimationFrame(function() {
+        var rows = document.querySelectorAll('.tag-row');
+        for (var r = 0; r < rows.length; r++) {
+            (function(row) {
+                var tags = row.querySelectorAll('.tag-item, .campaign-label');
+                if (!tags.length) return;
+                var rowTop = row.getBoundingClientRect().top;
+                for (var i = tags.length - 1; i >= 0; i--) {
+                    var t = tags[i];
+                    if (t.getBoundingClientRect().top > rowTop + 2) {
+                        t.classList.add('hidden');
+                    } else {
+                        break;
+                    }
                 }
-            }
-        })(rows[r]);
-    }
-})();
+            })(rows[r]);
+        }
+    });
+});
 </script>
 <!-- } 게시판 목록 끝 -->

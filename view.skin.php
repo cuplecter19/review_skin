@@ -112,7 +112,7 @@ if (!$is_viewer && $p_url !== '') {
 // ── 캠페인 관련 글 목록 ──
 $campaign_list = array();
 if ($campaign !== '') {
-    $safe_camp = addslashes($campaign);
+    $safe_camp = sql_escape_string($campaign);
     $sql_camp  = "SELECT wr_id, wr_subject, wr_1, wr_5, wr_datetime
                   FROM {$write_table}
                   WHERE wr_is_comment=0

@@ -24,8 +24,6 @@ if (!function_exists('sanitize_hashtags')) {
 if (isset($_POST['wr_7'])) {
     $_POST['wr_7'] = sanitize_hashtags($_POST['wr_7']);
 }
-
-// ─── 1) 컬럼 존재 확인 (최초 1회만 ALTER) ───
 $temp = sql_fetch("SELECT * FROM {$write_table} LIMIT 1");
 
 if (!isset($temp['wr_protect'])) {
