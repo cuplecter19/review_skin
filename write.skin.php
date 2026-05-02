@@ -423,10 +423,10 @@ if (campaignNewEl) {
     });
 }
 
-// ── 이모티콘 ──
+// ── 이모티콘 (스킨 내 emoticon_list.php 사용) ──
 function open_emoticon_write() {
-    var url = g5_bbs_url + '/emoticon.php?target_id=wr_content';
-    window.open(url, 'emoticon', 'width=350,height=400,scrollbars=yes');
+    var url = '<?php echo $board_skin_url ?>/emoticon_list.php?target_id=wr_content';
+    window.open(url, 'emoticon', 'width=400,height=500,scrollbars=yes');
 }
 </script>
 
