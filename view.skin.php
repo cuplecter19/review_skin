@@ -1,6 +1,32 @@
 <!-- view.php -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<?php
+// ── 에디터 폰트 로더 (data/font 커스텀 폰트 + Google 기본 폰트) ──
+// PHP 5.6: global 선언 필요
+global $config;
+
+// fonts.loader.php 경로: G5_EDITOR_PATH / cf_editor / fonts.loader.php
+if (!function_exists('load_editor_fonts')) {
+    $be_fonts_loader = G5_EDITOR_PATH . '/' . $config['cf_editor'] . '/fonts.loader.php';
+    if (file_exists($be_fonts_loader)) {
+        include_once($be_fonts_loader);
+    }
+}
+
+// 에디터 URL (view.css 링크용)
+$be_editor_url = G5_EDITOR_URL . '/' . $config['cf_editor'];
+?>
+<!-- 에디터 view CSS -->
+<link rel="stylesheet" href="<?php echo $be_editor_url; ?>/css/view.css">
+
+<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<!-- 에디터 폰트 (Google Fonts 기본 fallback + data/font 커스텀 @font-face) -->
+<?php
+if (function_exists('load_editor_fonts')) {
+    echo load_editor_fonts();
+}
+?>
 
 <?php
 
@@ -28,7 +54,7 @@ if (!function_exists('render_stars')) {
     }
 }
 
-// ── 태그 파싱 (쉼표 구분, 단어 내 띄어쓰기 허용) ──
+// ── 태그 파싱 ──
 if (!function_exists('parse_tags_strict')) {
     function parse_tags_strict($raw) {
         $raw = trim((string)$raw);
@@ -52,17 +78,19 @@ $content = $view['content'];
 $content = str_replace('(블러시작)', '<span class="blurtext">', $content);
 $content = str_replace('(블러끝)', '</span>', $content);
 
+// ── 이모티콘 치환 ──
+if (function_exists('emote_ev')) {
+    $content = emote_ev($content);
+}
+
 // ── 표지 URL ──
 $bg_url = isset($view['wr_1']) ? $view['wr_1'] : '';
 if (strpos($bg_url, 'http://') === 0 || strpos($bg_url, 'https://') === 0) {
     $poster_url = $bg_url;
-    $poster_style = "--view-bg: url('" . addslashes($bg_url) . "');";
 } elseif ($bg_url !== '') {
     $poster_url = G5_DATA_URL . '/file/' . $bo_table . '/' . $bg_url;
-    $poster_style = "--view-bg: url('" . addslashes($poster_url) . "');";
 } else {
-    $poster_url   = '';
-    $poster_style = '';
+    $poster_url = '';
 }
 
 // ── 메타 정보 ──
@@ -75,11 +103,8 @@ $period_e = isset($view['wr_8']) ? trim($view['wr_8']) : '';
 
 $user_tags = parse_tags_strict(isset($view['wr_7']) ? $view['wr_7'] : '');
 $auto_tags = array();
-if ($rating >= 4.5) {
-    $auto_tags[] = '평점 4.5 이상';
-} elseif ($rating >= 4.0) {
-    $auto_tags[] = '평점 4.0 이상';
-}
+if ($rating >= 4.5)       $auto_tags[] = '평점 4.5 이상';
+elseif ($rating >= 4.0)   $auto_tags[] = '평점 4.0 이상';
 
 // ── 보호글/멤버공개 체크 ──
 $is_viewer = true;
@@ -112,20 +137,20 @@ if (!$is_viewer && $p_url !== '') {
 // ── 캠페인 관련 글 목록 ──
 $campaign_list = array();
 if ($campaign !== '') {
-    $safe_camp = sql_escape_string($campaign);
-    $sql_camp  = "SELECT wr_id, wr_subject, wr_1, wr_5, wr_datetime
-                  FROM {$write_table}
-                  WHERE wr_is_comment=0
-                    AND wr_9='{$safe_camp}'
-                    AND wr_id != " . (int)$view['wr_id'] . "
-                  ORDER BY wr_datetime DESC";
+    $safe_camp   = sql_escape_string($campaign);
+    $sql_camp    = "SELECT wr_id, wr_subject, wr_1, wr_5, wr_datetime
+                    FROM {$write_table}
+                    WHERE wr_is_comment=0
+                      AND wr_9='{$safe_camp}'
+                      AND wr_id != " . (int)$view['wr_id'] . "
+                    ORDER BY wr_datetime DESC";
     $camp_result = sql_query($sql_camp);
     while ($crow = sql_fetch_array($camp_result)) {
         $campaign_list[] = $crow;
     }
 }
 ?>
-<div id="bo_v" class="view-fullbleed" style="<?php echo $poster_style ?>">
+<div id="bo_v" class="view-fullbleed">
 
 <!-- 플로팅 위젯 -->
 <div class="view-float-widget">
@@ -140,61 +165,74 @@ if ($campaign !== '') {
 
   <div class="content-wrap">
 
-    <!-- 포스터 헤더 -->
-    <div class="view-header">
-      <div class="poster-card">
-        <?php if ($poster_url) { ?>
-        <img src="<?php echo htmlspecialchars($poster_url, ENT_QUOTES, 'UTF-8') ?>" alt="<?php echo htmlspecialchars($view['subject'], ENT_QUOTES, 'UTF-8') ?>" class="poster-img">
-        <?php } else { ?>
-        <div class="poster-img" style="background:#222;min-height:280px;"></div>
-        <?php } ?>
-        <div class="poster-bottom">
-            <?php echo render_stars($rating) ?>
-            <button class="play-btn" onclick="document.getElementById('view-content-anchor').scrollIntoView({behavior:'smooth'});" title="본문으로 이동">
-                <i class="fa-solid fa-circle-play"></i>
-            </button>
+    <!-- ★ 헤더 + 본문을 하나의 그라데이션 카드로 묶음 ★ -->
+    <div class="view-main-card<?php echo empty($campaign_list) ? ' view-main-card--standalone' : '' ?>">
+
+      <!-- 다크 헤더 영역 -->
+      <div class="view-header-band">
+        <div class="view-header">
+          <div class="poster-card">
+            <?php if ($poster_url) { ?>
+            <img src="<?php echo htmlspecialchars($poster_url, ENT_QUOTES, 'UTF-8') ?>"
+                 alt="<?php echo htmlspecialchars($view['subject'], ENT_QUOTES, 'UTF-8') ?>"
+                 class="poster-img">
+            <?php } else { ?>
+            <div class="poster-img" style="background:#222;min-height:280px;"></div>
+            <?php } ?>
+            <div class="poster-bottom">
+                <?php echo render_stars($rating) ?>
+                <button class="play-btn"
+                        onclick="document.getElementById('view-content-anchor').scrollIntoView({behavior:'smooth'});"
+                        title="본문으로 이동">
+                    <i class="fa-solid fa-circle-play"></i>
+                </button>
+            </div>
+          </div>
+
+          <div class="view-meta">
+            <?php if ($campaign !== '') { ?>
+            <div class="view-campaign-label"><?php echo htmlspecialchars($campaign, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php } ?>
+
+            <h1 class="title"><?php echo htmlspecialchars($view['subject'], ENT_QUOTES, 'UTF-8') ?></h1>
+
+            <?php if ($period_s !== '' || $period_e !== '') { ?>
+            <div class="view-period">
+                <?php echo htmlspecialchars($period_s, ENT_QUOTES, 'UTF-8') ?>
+                <?php if ($period_e !== '') { ?>&nbsp;~&nbsp;<?php echo htmlspecialchars($period_e, ENT_QUOTES, 'UTF-8') ?><?php } ?>
+            </div>
+            <?php } ?>
+
+            <?php if ($author !== '') { ?>
+            <div class="view-author"><?php echo htmlspecialchars($author, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php } ?>
+
+            <?php if ($synopsis !== '') { ?>
+            <div class="view-synopsis"><?php echo nl2br(htmlspecialchars($synopsis, ENT_QUOTES, 'UTF-8')) ?></div>
+            <?php } ?>
+
+            <div class="view-tags">
+                <?php foreach ($user_tags as $tg) { ?>
+                <span class="tag-item">#<?php echo htmlspecialchars($tg, ENT_QUOTES, 'UTF-8') ?></span>
+                <?php } ?>
+                <?php foreach ($auto_tags as $at) { ?>
+                <span class="tag-item auto-tag">#<?php echo htmlspecialchars($at, ENT_QUOTES, 'UTF-8') ?></span>
+                <?php } ?>
+            </div>
+          </div>
         </div>
       </div>
+      <!-- /다크 헤더 영역 -->
 
-      <div class="view-meta">
-        <?php if ($campaign !== '') { ?>
-        <div class="view-campaign-label"><?php echo htmlspecialchars($campaign, ENT_QUOTES, 'UTF-8') ?></div>
-        <?php } ?>
+      <!-- 그라데이션 전환 구분자 (세로선) -->
+      <div class="view-card-divider" aria-hidden="true"></div>
 
-        <h1 class="title"><?php echo htmlspecialchars($view['subject'], ENT_QUOTES, 'UTF-8') ?></h1>
-
-        <?php if ($period_s !== '' || $period_e !== '') { ?>
-        <div class="view-period">
-            <?php echo htmlspecialchars($period_s, ENT_QUOTES, 'UTF-8') ?>
-            <?php if ($period_e !== '') { ?>&nbsp;~&nbsp;<?php echo htmlspecialchars($period_e, ENT_QUOTES, 'UTF-8') ?><?php } ?>
-        </div>
-        <?php } ?>
-
-        <?php if ($author !== '') { ?>
-        <div class="view-author"><?php echo htmlspecialchars($author, ENT_QUOTES, 'UTF-8') ?></div>
-        <?php } ?>
-
-        <?php if ($synopsis !== '') { ?>
-        <div class="view-synopsis"><?php echo nl2br(htmlspecialchars($synopsis, ENT_QUOTES, 'UTF-8')) ?></div>
-        <?php } ?>
-
-        <div class="view-tags">
-            <?php foreach ($user_tags as $tg) { ?>
-            <span class="tag-item">#<?php echo htmlspecialchars($tg, ENT_QUOTES, 'UTF-8') ?></span>
-            <?php } ?>
-            <?php foreach ($auto_tags as $at) { ?>
-            <span class="tag-item auto-tag">#<?php echo htmlspecialchars($at, ENT_QUOTES, 'UTF-8') ?></span>
-            <?php } ?>
-        </div>
+      <!-- 본문 영역 (카드 내 흰색 배경 구간) -->
+      <div id="view-content-anchor" class="view-content">
+          <?php echo $content ?>
       </div>
-    </div>
-    <!-- /포스터 헤더 -->
 
-    <div class="line-view" aria-hidden="true"></div>
-    <div id="view-content-anchor" class="view-content">
-        <?php echo $content ?>
-    </div>
-    <div class="line-view" aria-hidden="true"></div>
+    </div><!-- /view-main-card -->
 
     <?php if (!empty($campaign_list)) { ?>
     <div class="campaign-posts-wrap">
@@ -232,7 +270,7 @@ if ($campaign !== '') {
         <div class="bo_v_com">
             <?php if ($update_href) { ?><a href="<?php echo $update_href ?>" class="ui-btn">수정</a><?php } ?>
             <?php if ($delete_href) { ?><a href="<?php echo $delete_href ?>" class="ui-btn admin" onclick="del(this.href); return false;">삭제</a><?php } ?>
-            <?php if ($move_href) { ?><a href="<?php echo $move_href ?>" class="ui-btn admin" onclick="board_move(this.href); return false;">이동</a><?php } ?>
+            <?php if ($move_href)   { ?><a href="<?php echo $move_href ?>"   class="ui-btn admin" onclick="board_move(this.href); return false;">이동</a><?php } ?>
             <?php if ($search_href) { ?><a href="<?php echo $search_href ?>" class="ui-btn">검색</a><?php } ?>
             <a href="<?php echo $list_href ?>" class="ui-btn">목록</a>
         </div>
@@ -249,37 +287,30 @@ if ($campaign !== '') {
     var total = items.length;
     var VISIBLE = 3;
     var ITEM_H  = items.length > 0 ? items[0].offsetHeight : 60;
-    var offset  = 0; // 현재 맨 위에 보이는 인덱스
+    var offset  = 0;
 
-    // 최대 3개 높이로 컨테이너 고정
     list.style.overflow = 'hidden';
     list.style.height   = (VISIBLE * ITEM_H) + 'px';
     list.style.position = 'relative';
 
     function applyOffset() {
         for (var i = 0; i < items.length; i++) {
-            items[i].style.transform   = 'translateY(' + (-offset * ITEM_H) + 'px)';
-            items[i].style.transition  = 'transform .3s ease';
+            items[i].style.transform  = 'translateY(' + (-offset * ITEM_H) + 'px)';
+            items[i].style.transition = 'transform .3s ease';
         }
     }
-
     list.addEventListener('mouseenter', function() {
         list.addEventListener('wheel', onWheel, { passive: false });
     });
     list.addEventListener('mouseleave', function() {
         list.removeEventListener('wheel', onWheel);
     });
-
     function onWheel(e) {
         e.preventDefault();
-        if (e.deltaY > 0) {
-            offset = Math.min(offset + 1, Math.max(0, total - VISIBLE));
-        } else {
-            offset = Math.max(offset - 1, 0);
-        }
+        if (e.deltaY > 0) offset = Math.min(offset + 1, Math.max(0, total - VISIBLE));
+        else              offset = Math.max(offset - 1, 0);
         applyOffset();
     }
-
     applyOffset();
 })();
 </script>
